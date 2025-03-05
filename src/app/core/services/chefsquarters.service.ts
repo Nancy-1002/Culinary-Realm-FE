@@ -42,6 +42,10 @@ export class ChefsquartersService {
     return this.http.get<Pagination<Recipe>>(this.baseUrl + 'recipes', {params});
   }
 
+  getRecipe(id: number){
+    return this.http.get<Recipe>(this.baseUrl + 'recipes/' + id);
+  }
+
   getCuisines(){
     if(this.cuisines.length > 0) return;
     return this.http.get<string[]>(this.baseUrl + 'recipes/cuisines').subscribe({

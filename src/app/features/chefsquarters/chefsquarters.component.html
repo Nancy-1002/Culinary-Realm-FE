@@ -1,62 +1,65 @@
-<div class="flex flex-col gap-3">
-    <div class="flex justify-between gap-3">
-        <mat-paginator
-            class="bg-white"
-            (page)="handlePageEvent($event)"
-            [length]="recipes?.count"
-            [pageSize]="quarterParams.pageSize"
-            [showFirstLastButtons]="true"
-            [pageSizeOptions]="pageSizeOptions"
-            [pageIndex]="quarterParams.pageNumber - 1"
-            aria-label="Select Page"
-        ></mat-paginator>
-
-        <form 
-            #searchForm="ngForm" 
-            class="relative flex items-center w-full max-w-md mx-4"
-        >
-        <input 
-            #searchInput
-            type="search" 
-            class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg"
-            placeholder="Search Recipes"
-            name="search"
-            [(ngModel)]="quarterParams.search"
-            (keyup)="onSearchChange(searchInput.value)"
-        >
-        <button mat-icon-button type="button" 
-            class="absolute inset-y-0 right-8 top-2 flex items-center pl-3"
-        >
-            <mat-icon>search</mat-icon>
-        </button>
-    </form>
-
-        <div class="flex gap-3">
-            <button mat-stroked-button (click)="openFiltersDialog()">
-                <mat-icon>filter_list</mat-icon>
-                Filters
-            </button>
-            <button mat-stroked-button [mat-menu-trigger-for]="sortMenu">
-                <mat-icon>swap_vert</mat-icon>
-                Sort
-            </button>
+@if(recipes){
+    <div class="flex flex-col gap-3">
+        <div class="flex justify-between gap-3">
+            <mat-paginator
+                class="bg-white"
+                (page)="handlePageEvent($event)"
+                [length]="recipes.count"
+                [pageSize]="quarterParams.pageSize"
+                [showFirstLastButtons]="true"
+                [pageSizeOptions]="pageSizeOptions"
+                [pageIndex]="quarterParams.pageNumber - 1"
+                aria-label="Select Page"
+            ></mat-paginator>
+    
+            <form 
+                #searchForm="ngForm" 
+                class="relative flex items-center w-full max-w-md mx-4"
+            >
+                <input 
+                    #searchInput
+                    type="search" 
+                    class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg"
+                    placeholder="Search Recipes"
+                    name="search"
+                    [(ngModel)]="quarterParams.search"
+                    (keyup)="onSearchChange(searchInput.value)"
+                >
+                <button mat-icon-button type="button" 
+                    class="absolute inset-y-0 right-8 top-2 flex items-center pl-3"
+                >
+                    <mat-icon>search</mat-icon>
+                </button>
+            </form>
+    
+            <div class="flex gap-3">
+                <button mat-stroked-button (click)="openFiltersDialog()">
+                    <mat-icon>filter_list</mat-icon>
+                    Filters
+                </button>
+                <button mat-stroked-button [mat-menu-trigger-for]="sortMenu">
+                    <mat-icon>swap_vert</mat-icon>
+                    Sort
+                </button>
+            </div>
+            
         </div>
-        
+        <div class="grid grid-cols-4 gap-4"> 
+            @for (recipe of recipes.data; track recipe.id) {
+                <app-recipe-item [recipe]="recipe"></app-recipe-item>
+            }
+        </div>
     </div>
-    <div class="grid grid-cols-4 gap-4"> 
-        @for (recipe of recipes?.data; track recipe.id) {
-            <app-recipe-item [recipe]="recipe"></app-recipe-item>
-        }
-    </div>
-</div>
-
-<mat-menu #sortMenu="matMenu">
-    <mat-selection-list [multiple]="false" (selectionChange)="onSortChange($event)">
-        @for (sort of sortOptions; track $index) {
-            <mat-list-option [value]="sort.value" [selected]="quarterParams.sort === sort.value">
-                {{sort.name}}
-            </mat-list-option>
-        }
-    </mat-selection-list>
-</mat-menu>
-
+    
+    <mat-menu #sortMenu="matMenu">
+        <mat-selection-list [multiple]="false" (selectionChange)="onSortChange($event)">
+            @for (sort of sortOptions; track $index) {
+                <mat-list-option [value]="sort.value" [selected]="quarterParams.sort === sort.value">
+                    {{sort.name}}
+                </mat-list-option>
+            }
+        </mat-selection-list>
+    </mat-menu>
+    
+    
+}

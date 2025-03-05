@@ -1,5 +1,7 @@
 @if(recipe){
-    <mat-card appearance="raised" class="relative w-full aspect-square flex flex-col overflow-hidden">
+    <mat-card appearance="raised" 
+        routerLink="/chefsquarters/{{recipe.id}}"
+        class="relative w-full aspect-square flex flex-col overflow-hidden">
         <div class="relative w-full h-[78%]">
             <img src="{{recipe.imageUrl}}" alt="{{recipe.title}} image" class="w-full h-full object-cover">
         </div>

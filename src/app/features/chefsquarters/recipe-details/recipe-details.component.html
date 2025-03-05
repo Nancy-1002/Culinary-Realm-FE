@@ -1,0 +1,68 @@
+@if(recipe){
+    <div class="recipe-details-container p-6 flex flex-wrap">
+        <div class="w-full md:w-1/2 p-4">
+            <img [src]="recipe.imageUrl" alt="{{recipe.title}}" class="rounded-lg shadow-lg w-full max-w-md mx-auto">
+        </div>
+        <div class="w-full md:w-1/2 p-4">
+            <h1 class="text-3xl font-bold text-primary mb-4">{{ recipe.title }}</h1>
+            <p class="text-gray-600 mt-2">{{ recipe.description }}</p>
+            <div class="grid grid-cols-2 gap-4 mt-6 mb-8">
+                <p><strong>Time:</strong> {{ recipe.totalTime }}</p>
+                <p><strong>Calories:</strong> {{ recipe.calories }} kcal</p>
+                <p><strong>Serves:</strong> {{ recipe.serves }}</p>
+                <p><strong>Difficulty:</strong> {{ recipe.difficulty }}</p>
+                <p><strong>Cuisine:</strong> {{ recipe.cuisine }}</p>
+                <p><strong>Meal Type:</strong> {{ recipe.mealType }}</p>
+            </div>
+            <div class="relative">
+                <mat-accordion class="mt-6">
+                    <mat-expansion-panel class="mb-6 shadow-lg">
+                        <mat-expansion-panel-header class="bg-gray-50">
+                            <mat-panel-title class="font-semibold text-primary"> Ingredients </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div class="p-4">
+                            <div class="grid grid-cols-1 gap-4">
+                                @for (ingredient of recipe.ingredients; track $index) {
+                                    <div class="flex items-center justify-between border p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                                        <p class="text-sm text-gray-700">{{ ingredient.name }}</p>
+                                        <mat-icon 
+                                            (click)="toggleIngredient(ingredient.id)" 
+                                            [ngClass]="{'text-green-500': selectedIngredients.has(ingredient.id)}"
+                                            class="cursor-pointer hover:text-green-600 transition-colors"
+                                        >
+                                            {{ selectedIngredients.has(ingredient.id) ? 'check_circle' : 'shopping_bag' }}
+                                        </mat-icon>
+                                    </div>
+                                }
+                            </div>    
+                        </div>
+                    </mat-expansion-panel>
+                    <mat-expansion-panel class="shadow-lg">
+                        <mat-expansion-panel-header class="bg-gray-50">
+                            <mat-panel-title class="font-semibold text-primary"> Steps </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div class="p-4">
+                            <ol class="list-decimal pl-5 pb-4 space-y-3">
+                                @for (step of recipe.steps; track step.id) {
+                                    <li class="text-gray-700">{{ step.description }}</li>
+                                }
+                            </ol>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </div>
+            <div class="flex mt-6 hover:text-blue-700">
+                <a *ngIf="recipe.videoUrl" [href]="recipe.videoUrl" target="_blank" class="video-button flex items-center">
+                    <mat-icon class="mr-2">play_circle</mat-icon> Watch Video: {{recipe.title}}
+                </a>
+                <button 
+                class="absolute bottom-6 right-12 bg-purple-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-purple-600 transition-colors flex items-center"
+                >
+                <mat-icon class="mr-2">favorite</mat-icon>
+                    Add to Favorites
+                </button>
+            </div>
+            
+        </div>
+    </div>
+}

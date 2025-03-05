@@ -3,6 +3,7 @@ import { Recipe } from '../../../shared/models/recipe';
 import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-recipe-item',
@@ -12,7 +13,8 @@ import { MatIcon } from '@angular/material/icon';
     MatCardContent,
     MatCardActions,
     MatButton,
-    MatIcon
+    MatIcon,
+    RouterLink
   ],
   templateUrl: './recipe-item.component.html',
   styleUrl: './recipe-item.component.scss'
