@@ -1,0 +1,39 @@
+<div>
+    <h3 class="text-3xl text-center pt-6 mb-3">Filters</h3>
+    <mat-divider></mat-divider>
+    <div class="flex p-4">
+        <div class="w-1/2">
+            <h4 class="font-semibold text-xl text-primary">Cuisines</h4>
+            <mat-selection-list [(ngModel)]="selectedCuisines" [multiple]="true">
+                @for (cuisine of cqService.cuisines; track $index) {
+                    <mat-list-option [value]="cuisine">
+                        {{cuisine}}
+                    </mat-list-option>
+                }
+            </mat-selection-list>
+        </div>
+        <div class="w-1/2">
+            <h4 class="font-semibold text-xl text-primary">Meal Types</h4>
+            <mat-selection-list [(ngModel)]="selectedMealTypes" [multiple]="true">
+                @for (mealType of cqService.mealTypes; track $index) {
+                    <mat-list-option [value]="mealType">
+                        {{mealType}}
+                    </mat-list-option>
+                }
+            </mat-selection-list>
+        </div>
+        <div class="w-1/2">
+            <h4 class="font-semibold text-xl text-primary">Difficulties</h4>
+            <mat-selection-list [(ngModel)]="selectedDifficulty" [multiple]="true">
+                @for (diff of cqService.difficulty; track $index) {
+                    <mat-list-option [value]="diff">
+                        {{diff}}
+                    </mat-list-option>
+                }
+            </mat-selection-list>
+        </div>
+    </div>
+    <div class="flex justify-end p-4">
+        <button mat-flat-button (click)="applyFilters()">Apply Filters</button>
+    </div>
+</div>
