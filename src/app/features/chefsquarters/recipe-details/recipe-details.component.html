@@ -1,7 +1,11 @@
 @if(recipe){
     <div class="recipe-details-container p-6 flex flex-wrap">
         <div class="w-full md:w-1/2 p-4">
-            <img [src]="recipe.imageUrl" alt="{{recipe.title}}" class="rounded-lg shadow-lg w-full max-w-md mx-auto">
+            <img 
+                [src]="recipe.imageUrl" 
+                alt="{{recipe.title}}" 
+                class="rounded-lg shadow-lg w-full max-w-md mx-auto border-2 border-transparent hover:border-purple-700 transition-all duration-300"
+            >
         </div>
         <div class="w-full md:w-1/2 p-4">
             <h1 class="text-3xl font-bold text-primary mb-4">{{ recipe.title }}</h1>
