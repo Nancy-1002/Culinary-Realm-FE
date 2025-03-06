@@ -38,16 +38,17 @@ export class ChefsquartersComponent implements OnInit {
 
   recipes?: Pagination<Recipe>;
   selectedSort: string = 'title';
-  searchQuery: string = ''; // Store search input value
-
-  private searchSubject = new Subject<string>(); // RxJS Subject for search input
-
   sortOptions = [
     { name: 'Alphabetical', value: 'title' },
     { name: 'Calories (Low to High)', value: 'calAsc' },
     { name: 'Calories (High to Low)', value: 'calDesc' },
   ];
 
+  searchQuery: string = ''; // Store search input value
+
+  private searchSubject = new Subject<string>(); // RxJS Subject for search input
+
+  
   quarterParams = new QuarterParams();
   pageSizeOptions = [4, 8, 12, 16, 20];
 
