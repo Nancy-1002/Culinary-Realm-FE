@@ -1,0 +1,49 @@
+.full-width-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Adds space between inputs */
+}
+
+.full-width {
+    width: 100%;
+}
+
+:host ::ng-deep .mat-horizontal-stepper-header .mat-step-label {
+    font-size: 1.3rem !important;
+}
+.payment-container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .secure-checkout {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #008000;
+    font-weight: bold;
+  }
+  
+  .secure-icon {
+    margin-right: 8px;
+  }
+  
+  .card-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .expiry-security {
+    display: flex;
+    gap: 24px;
+  }
+  
+  .checkout-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+  }
+  

@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Address, User } from '../../shared/models/user';
-import { map } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -35,10 +35,18 @@ export class AccountService {
     return this.http.post(this.baseUrl + 'account/logout', {});
   }
 
-  updateAddress(address: Address){
-    return this.http.post(this.baseUrl + 'account/address', address);
-  }
-
+  updateAddress(address: Address) {
+    return this.http.post<User>(this.baseUrl + 'account/address', address).pipe(
+      tap(updatedUser => {
+          this.currentUser.update(user => {
+          if (user) {
+            user.address = { ...address }; 
+          }
+          return user;
+        });
+      })
+    );
+  }  
   getAuthState(){
     return this.http.get<{isAuthenticated: boolean}>(this.baseUrl + 'account/auth-status');
   }

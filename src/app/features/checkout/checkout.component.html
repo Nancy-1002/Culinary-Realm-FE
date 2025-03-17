@@ -1,1 +1,133 @@
-<p>checkout works!</p>
+<div class="flex mt-32 gap-10">
+    <div class="w-3/4">
+        <mat-stepper (selectionChange)="onStepChange($event)" #stepper class="bg-white border border-gray-200 shadow-sm">
+            <mat-step label="Address">
+                <form #addressForm="ngForm" class="full-width-form">
+                    <mat-form-field class="full-width">
+                        <mat-label>Full Name</mat-label>
+                        <input matInput [(ngModel)]="fullName" name="fullName" required />
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width">
+                        <mat-label>Country or Region</mat-label>
+                        <mat-select [(ngModel)]="address.country" name="country" required >
+                            <mat-option *ngFor="let country of countries" [value]="country">
+                                {{ country }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width">
+                        <mat-label>Address Line 1</mat-label>
+                        <input matInput [(ngModel)]="address.line1" name="line1" required/>
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width">
+                        <mat-label>Address Line 2</mat-label>
+                        <input matInput [(ngModel)]="address.line2" name="line2" />
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width">
+                        <mat-label>Town or City</mat-label>
+                        <input matInput [(ngModel)]="address.city" name="city" required/>
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width">
+                        <mat-label>State</mat-label>
+                        <input matInput [(ngModel)]="address.state" name="state" required />
+                    </mat-form-field>
+
+                    <mat-form-field class="full-width">
+                        <mat-label>ZIP Code</mat-label>
+                        <input matInput [(ngModel)]="address.zipCode" name="zipCode" required />
+                    </mat-form-field>
+
+                    <div class="flex justify-end mt-1">
+                        <mat-checkbox [checked]="saveAddress" (change)="onSaveAddressCheckboxChange($event)">
+                            Save as default address
+                        </mat-checkbox>
+                    </div>
+                    <div class="flex justify-between mt-6">
+                        <button routerLink="/shop" mat-stroked-button>Continue shopping</button>
+                        <button matStepperNext mat-flat-button [disabled]="!addressForm.valid">Next</button>
+                    </div>
+                </form>                
+            </mat-step>
+
+            <mat-step label="Shipping">
+                <app-delivery></app-delivery>
+                <div class="flex justify-between mt-6">
+                    <button matStepperPrevious mat-stroked-button>Back</button>
+                    <button matStepperNext mat-flat-button [disabled]="!addressForm.valid">Next</button>
+                </div>
+            </mat-step>
+            <mat-step label="Payment">
+                <div class="payment-container">
+                  <div class="secure-checkout">
+                    <span class="secure-icon">🔒</span>
+                    <span>Secure, 1-click checkout with Razorpay</span>
+                  </div>
+              
+                  <form [formGroup]="checkoutForm">
+                    <mat-form-field class="mb-5 w-full">
+                      <mat-label>Card number</mat-label>
+                      <input matInput formControlName="cardNumber" placeholder="1234 5678 9012 3456">
+                      <mat-error *ngIf="checkoutForm.get('cardNumber')?.invalid">
+                        {{ cardNumberError }}
+                      </mat-error>
+                    </mat-form-field>
+                  
+                    <div class="expiry-security">
+                      <mat-form-field >
+                        <mat-label>Expiry date</mat-label>
+                        <input matInput formControlName="expiryDate" placeholder="MM/YY">
+                      </mat-form-field>
+                  
+                      <mat-form-field >
+                        <mat-label>Security code</mat-label>
+                        <input matInput formControlName="securityCode" placeholder="CVV">
+                      </mat-form-field>
+                    </div>
+                  
+                    <mat-checkbox formControlName="billingSameAsShipping">
+                      Billing is same as shipping information
+                    </mat-checkbox>  
+                  </form>
+                  
+                  
+                  <!-- Navigation Buttons -->
+                  <div class="checkout-buttons">
+                    <button matStepperPrevious mat-stroked-button>Back</button>
+                    <button matStepperNext mat-flat-button>Next</button>
+                  </div>
+                </div>
+              </mat-step>
+              
+              <mat-step label="Confirmation">
+                <h3 class="text-lg font-semibold mb-4">Review Your Order</h3>
+              
+                <div class="p-4 border border-gray-300 rounded-lg bg-gray-50">
+                  <h4 class="font-medium">Shipping Address</h4>
+                  <p>{{ fullName }}</p>
+                  <p>{{ address.line1 }}, {{ address.line2 }}</p>
+                  <p>{{ address.city }}, {{ address.state }} - {{ address.zipCode }}</p>
+                  <p>{{ address.country }}</p>
+                </div>
+              
+                <div class="p-4 mt-4 border border-gray-300 rounded-lg bg-gray-50">
+                  <h4 class="font-medium">Payment Details</h4>
+                  <p>Card Number: **** **** **** {{ checkoutForm.get('cardNumber')?.value?.slice(-4) }}</p>
+                  <p>Expiry Date: {{ checkoutForm.get('expiryDate')?.value }}</p>
+                </div>
+                <div class="checkout-buttons mt-6 flex justify-between">
+                  <button matStepperPrevious mat-stroked-button>Back</button>
+                  <button mat-flat-button (click)="razorpayService.confirmPayment()">Pay {{ cartService.totals()?.total }} Rs/-</button>
+                </div>
+              </mat-step>
+              
+        </mat-stepper>
+    </div>
+    <div class="w-1/4">
+        <app-order-summary></app-order-summary>
+    </div>
+</div>
