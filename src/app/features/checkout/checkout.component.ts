@@ -19,6 +19,8 @@ import { ChangeDetectorRef } from '@angular/core';
 import { DeliveryComponent } from "./delivery/delivery.component";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
+import { CardDetails, OrderToCreate, ShippingAddress } from '../../shared/models/order';
+import { OrderService } from '../../core/services/order.service';
 
 @Component({
   selector: 'app-checkout',
@@ -37,7 +39,6 @@ import { CartService } from '../../core/services/cart.service';
     FormsModule,
     MatCheckboxModule,
     DeliveryComponent,
-    MatError,
     ReactiveFormsModule
 ],
   templateUrl: './checkout.component.html',
@@ -47,9 +48,9 @@ export class CheckoutComponent implements OnInit {
   razorpayService = inject(RazorpayService);
   private snackbar = inject(SnackbarService);
   private accountService = inject(AccountService);
+  private orderService = inject(OrderService);
   cartService = inject(CartService);
   private cdr = inject(ChangeDetectorRef);
-  checkoutForm: FormGroup;
   saveAddress = false;
   fullName: string = '';
   address: Address = {
@@ -63,23 +64,7 @@ export class CheckoutComponent implements OnInit {
   
 
   countries: string[] = ['United States', 'India', 'Canada', 'Australia', 'United Kingdom', 'Germany', 'France', 'China', 'Japan'];
-  constructor(private fb: FormBuilder) {
-    this.checkoutForm = this.fb.group({
-      cardNumber: ['', [Validators.required, Validators.pattern(/^\d{16}$/)]], // Ensures exactly 16 digits
-      expiryDate: ['', [Validators.required, Validators.pattern(/^(0[1-9]|1[0-2])\/\d{2}$/)]], // Format: MM/YY
-      securityCode: ['', [Validators.required, Validators.pattern(/^\d{3,4}$/)]], // 3 or 4 digits
-      billingSameAsShipping: [true]
-    });
-  }
-  get cardNumberError() {
-    const cardCtrl = this.checkoutForm.get('cardNumber');
-    if (cardCtrl?.hasError('required')) {
-      return 'Card number is required';
-    } else if (cardCtrl?.hasError('pattern')) {
-      return 'Card number must be exactly 16 digits';
-    }
-    return null;
-  }
+  
 
 
   ngOnInit() {
@@ -111,11 +96,46 @@ export class CheckoutComponent implements OnInit {
       }
     }
   }
+   
 
-  async getAddressFromRazorpay(): Promise<Address | null> {
+  private async createOrderModel(cardDetails: CardDetails): Promise<OrderToCreate> {
+    const cart = this.cartService.cart();
+    const shippingAddress = await this.getAddressFromRazorpay() as ShippingAddress;
+    
+    // Get complete payment response from Razorpay service
+    const paymentResponse = this.razorpayService.getPaymentInfo();
+    
+    if (!paymentResponse) {
+      throw new Error('No payment information available');
+    }
+    if(!cart?.id || !cart.deliveryMethodId || !cardDetails || !shippingAddress){
+      throw new Error("Problem creating order")
+    }
+    // Return the complete order model
+    const order: OrderToCreate = {
+      cartId: cart.id,
+      paymentSummary: {
+        last4: 1111,
+        brand: cardDetails.cardType,
+        expMonth: 12,
+        year: 2025
+      },
+      deliveryMethodId: cart.deliveryMethodId,
+      shippingAddress
+    }
+    return order;
+  }
+
+  async getAddressFromRazorpay(): Promise<Address | ShippingAddress | null> {
     try {
       const userInfo = await firstValueFrom(this.razorpayService.getUserInfo());
-      return userInfo?.address ? { ...userInfo.address } : null;
+
+      if (userInfo?.address) {
+        const fullName = `${userInfo.firstName} ${userInfo.lastName}`;
+        return { ...userInfo.address, name: fullName };
+      }
+
+      return null;
     } catch (error: any) {
       this.snackbar.error(error.message);
       return null;
@@ -126,11 +146,62 @@ export class CheckoutComponent implements OnInit {
     this.saveAddress = event.checked;
   }
 
-  processPayment() {
+  async processPayment() {
     if (!this.address.line1 || !this.address.city || !this.address.zipCode) {
-      alert("Please fill in all required address fields");
+      this.snackbar.error("Please fill in all required address fields");
       return;
     }
-    this.razorpayService.initializeRazorpayPayment();
+  
+    try {
+      const paymentResponse = await this.razorpayService.initializeRazorpayPayment();
+      console.log("Payment response in processPayment:", paymentResponse);
+      
+      // Now immediately confirm order after successful payment
+      await this.confirmPayment(); 
+    } catch (err) {
+      this.snackbar.error("Failed to initiate payment.");
+    }
   }
+  
+  
+  async confirmPayment() {
+    try {
+      const frontendPaymentResponse = this.razorpayService.getPaymentInfo();
+  
+      if (!frontendPaymentResponse || !frontendPaymentResponse.razorpay_payment_id) {
+        this.snackbar.error('Payment not successful. Please try again.');
+        return;
+      }
+  
+      // Fetch card details from backend using payment ID
+      const backendCardDetails = await firstValueFrom(
+        this.razorpayService.getCardDetails(frontendPaymentResponse.razorpay_payment_id)
+      );
+  
+      if (!backendCardDetails) {
+        this.snackbar.error('Unable to retrieve card details from backend.');
+        return;
+      }
+  
+      // Create order model with backend card details
+      const orderModel = await this.createOrderModel(backendCardDetails);
+      console.log('Order model:', orderModel);
+  
+      const orderResult = await firstValueFrom(this.orderService.createOrder(orderModel));
+      console.log('Order result:', orderResult);
+  
+      if (orderResult) {
+        this.cartService.deleteCart();
+        orderResult.status = 'success';
+        this.cartService.selectedDelivery.set(null);
+        this.snackbar.success('Order placed successfully!');
+      } else {
+        throw new Error('Order creation failed');
+      }
+    } catch (error: any) {
+      this.snackbar.error('Failed to confirm payment: ' + error.message);
+    }
+  }
+  
+  
 }

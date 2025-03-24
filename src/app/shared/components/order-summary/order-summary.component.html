@@ -33,16 +33,22 @@
     </div>
 
     <div class="space-y-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-        <form class="space-y-2 flex flex-col p-2">
-            <label class="mb-2 block text-sm font-medium">
-                Do you have a voucher code?
-            </label>
-            <mat-form-field>
-                <mat-label>Voucher Code</mat-label>
-                <input type="text" matInput placeholder="Enter your voucher code">
-            </mat-form-field>
-
-            <button mat-flat-button>Apply code</button>
+        <form class="space-y-2 flex flex-col p-2" (submit)="applyCoupon(); $event.preventDefault()">
+          <label class="mb-2 block text-sm font-medium">
+            Do you have a voucher code?
+          </label>
+      
+          <mat-form-field>
+            <mat-label>Voucher Code</mat-label>
+            <input type="text" matInput placeholder="Enter your voucher code" [(ngModel)]="couponCode" name="couponCode">
+          </mat-form-field>
+      
+          <button mat-flat-button color="primary" type="submit">Apply Code</button>
+      
+          <p *ngIf="message" class="text-sm mt-1" [ngClass]="{'text-green-600': messageColor === 'green', 'text-red-600': messageColor === 'red'}">
+            {{ message }}
+          </p>
         </form>
-    </div>
+      </div>
+      
 </div>

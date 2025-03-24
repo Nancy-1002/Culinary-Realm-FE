@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { Location } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { RouterLink } from '@angular/router';
 import {MatInput} from '@angular/material/input';
 import { CartService } from '../../../core/services/cart.service';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-order-summary',
   standalone: true,
@@ -13,7 +14,9 @@ import { CartService } from '../../../core/services/cart.service';
     RouterLink,
     MatFormField,
     MatLabel,
-    MatInput
+    MatInput,
+    CommonModule,
+    FormsModule
   ],
   templateUrl: './order-summary.component.html',
   styleUrl: './order-summary.component.scss'
@@ -21,4 +24,12 @@ import { CartService } from '../../../core/services/cart.service';
 export class OrderSummaryComponent {
   cartService = inject(CartService);
   location = inject(Location);
+  couponCode = '';
+  message = '';
+  messageColor = ''; 
+  applyCoupon() {
+    const result = this.cartService.applyCoupon(this.couponCode.trim());
+    this.message = result.message;
+    this.messageColor = result.success ? 'green' : 'red';
+  }
 }
