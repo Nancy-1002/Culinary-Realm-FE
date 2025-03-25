@@ -17,7 +17,7 @@
             @if(accountService.currentUser()){
                 <button mat-button [matMenuTriggerFor]="menu">
                     <mat-icon>arrow_drop_down</mat-icon>
-                    <span>{{accountService.currentUser()?.firstName}} {{accountService.currentUser()?.lastName}}</span>
+                    <span class="text-lg">{{accountService.currentUser()?.firstName}} {{accountService.currentUser()?.lastName}}</span>
                 </button>
             }@else {
                 <button routerLink="/account/login" mat-stroked-button>Login</button>

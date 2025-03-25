@@ -15,11 +15,15 @@ import { authGuard } from './core/guards/auth.guard';
 import { emptyCartGuard } from './core/guards/empty-cart.guard';
 import { OrderComponent } from './features/orders/order.component';
 import { OrderDetailedComponent } from './features/orders/order-detailed.component';
+import { FavoritesComponent } from './features/favorites/favorites.component';
+import { FavoriteDetailsComponent } from './features/favorites/favorite-details/favorite-details.component';
 
 export const routes: Routes = [
     {path: '', component: HomeComponent},
     {path: 'chefsquarters', component: ChefsquartersComponent},
     {path: 'chefsquarters/:id', component: RecipeDetailsComponent},
+    {path: 'favorites', component: FavoritesComponent, canActivate:[authGuard]},
+    {path: 'favorites/:id', component: FavoriteDetailsComponent, canActivate:[authGuard]},
     {path: 'shop', component: ShopComponent},
     {path: 'shop/:id', component: ProductDetailsComponent},
     {path: 'cart', component: CartComponent},

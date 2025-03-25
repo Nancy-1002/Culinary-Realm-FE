@@ -22,54 +22,65 @@ import { CartService } from '../../../core/services/cart.service';
 export class RecipeDetailsComponent implements OnInit {
   private cqService = inject(ChefsquartersService);
   private activatedRoute = inject(ActivatedRoute);
-  recipe?: Recipe;
-  selectedIngredients = new Set<number>(); 
   cartService = inject(CartService);
-  addedIngredients = new Set<number>(); 
+
+  recipe?: Recipe;
+  selectedIngredients = new Set<number>();
+  addedIngredients = new Set<number>();
+  isFavorite = false; 
 
   ngOnInit(): void {
     this.loadRecipe();
+    this.checkIfFavorite(); 
   }
 
-  // In your component.ts file
-removeIngredientFromCart(ingId: number): void {
-  console.log('Removing ingredient:', ingId);
-  this.addedIngredients.delete(ingId);
-  this.cartService.getIngredientProductId(ingId).subscribe({
-    next: (productId) => {
-      console.log('Product ID to remove:', productId);
-      this.cartService.removeItemFromCart(productId, 1);
-    },
-    error: (err) => console.error('Error getting product ID:', err)
-  });
-}
-
-addIngredientToCart(ingId: number): void {
-  console.log('Adding ingredient:', ingId);
-  this.addedIngredients.add(ingId);
-  // Fetch the product associated with this ingredient and add it to cart
-  this.cartService.getIngredientProduct(ingId).subscribe({
-    next: () => console.log('Product added successfully'),
-    error: (err) => console.error('Error adding product:', err)
-  });
-}
   loadRecipe() {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     if (!id) return;
-    
+
     this.cqService.getRecipe(+id).subscribe({
       next: (response) => {
         this.recipe = response;
       },
-      error: (error) => console.log(error)
+      error: (error) => console.log(error),
     });
   }
 
-  toggleIngredient(id: number) {
-    if (this.selectedIngredients.has(id)) {
-      this.selectedIngredients.delete(id);
+  addIngredientToCart(ingId: number): void {
+    console.log('Adding ingredient:', ingId);
+    this.addedIngredients.add(ingId);
+    this.cartService.getIngredientProduct(ingId).subscribe({
+      next: () => console.log('Product added successfully'),
+      error: (err) => console.error('Error adding product:', err),
+    });
+  }
+
+  removeIngredientFromCart(ingId: number): void {
+    console.log('Removing ingredient:', ingId);
+    this.addedIngredients.delete(ingId);
+    this.cartService.getIngredientProductId(ingId).subscribe({
+      next: (productId) => {
+        console.log('Product ID to remove:', productId);
+        this.cartService.removeItemFromCart(productId, 1);
+      },
+      error: (err) => console.error('Error getting product ID:', err),
+    });
+  }
+
+  // Toggle favorite status
+  toggleFavorite() {
+    if (!this.recipe) return;
+
+    this.isFavorite = !this.isFavorite;
+
+    if (this.isFavorite) {
+      console.log('Adding recipe to favorites...');
     } else {
-      this.selectedIngredients.add(id);
+      console.log('Removing recipe from favorites...');
     }
+  }
+
+  checkIfFavorite() {
+    this.isFavorite = false; 
   }
 }

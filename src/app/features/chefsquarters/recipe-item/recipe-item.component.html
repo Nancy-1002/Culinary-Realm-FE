@@ -1,18 +1,30 @@
 @if(recipe){
-    <mat-card appearance="raised" 
-        routerLink="/chefsquarters/{{recipe.id}}"
-        class="relative w-full aspect-square flex flex-col overflow-hidden">
-        <div class="relative w-full h-[78%]">
-            <img src="{{recipe.imageUrl}}" alt="{{recipe.title}} image" class="w-full h-full object-cover">
-        </div>
-        <mat-card-content class="w-full mt-1 flex flex-col items-center justify-center">
-            <h2 class="text-md truncate font-semibold uppercase">{{recipe.title}}</h2>
-        </mat-card-content>
-        <mat-card-actions>
-            <button mat-stroked-button class="w-full">
-                <mat-icon>favorite</mat-icon>
-                Add to favorites 
-            </button>
-        </mat-card-actions>
+    <mat-card 
+      appearance="raised" 
+      routerLink="/chefsquarters/{{recipe.id}}" 
+      class="relative w-full aspect-square flex flex-col overflow-hidden">
+  
+      <div class="relative w-full h-[78%]">
+        <img src="{{recipe.imageUrl}}" alt="{{recipe.title}} image" class="w-full h-full object-cover">
+      </div>
+  
+      <mat-card-content class="w-full mt-1 flex flex-col items-center justify-center">
+        <h2 class="text-md truncate font-semibold uppercase">{{recipe.title}}</h2>
+      </mat-card-content>
+  
+      <mat-card-actions>
+        <button 
+          mat-stroked-button 
+          class="w-full"
+          (click)="addToFavorites(recipe.id); $event.stopPropagation();"
+        >
+          <mat-icon class="mr-1">
+            {{ favoriteAdded.has(recipe.id) ? 'check_circle' : 'favorite' }}
+          </mat-icon>
+          {{ favoriteAdded.has(recipe.id) ? 'Added to Favorites' : 'Add to Favorites' }}
+        </button>
+      </mat-card-actions>
+  
     </mat-card>
-}
+  }
+  
