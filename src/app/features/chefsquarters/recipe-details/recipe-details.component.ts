@@ -6,6 +6,7 @@ import { Recipe } from '../../../shared/models/recipe';
 import { MatIcon } from '@angular/material/icon';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { CartService } from '../../../core/services/cart.service';
+import { FavoriteService } from '../../../core/services/favorite.service';
 
 @Component({
   selector: 'app-recipe-details',
@@ -23,7 +24,7 @@ export class RecipeDetailsComponent implements OnInit {
   private cqService = inject(ChefsquartersService);
   private activatedRoute = inject(ActivatedRoute);
   cartService = inject(CartService);
-
+  private favoriteService = inject(FavoriteService);
   recipe?: Recipe;
   selectedIngredients = new Set<number>();
   addedIngredients = new Set<number>();
@@ -67,18 +68,28 @@ export class RecipeDetailsComponent implements OnInit {
     });
   }
 
-  // Toggle favorite status
   toggleFavorite() {
     if (!this.recipe) return;
-
-    this.isFavorite = !this.isFavorite;
-
-    if (this.isFavorite) {
-      console.log('Adding recipe to favorites...');
+  
+    if (!this.isFavorite) {
+      this.favoriteService.createFavorite(this.recipe.id).subscribe({
+        next: () => {
+          this.isFavorite = true;
+          console.log('Recipe added to favorites');
+        },
+        error: (err) => console.error('Failed to add favorite', err),
+      });
     } else {
-      console.log('Removing recipe from favorites...');
+      this.favoriteService.deleteFavorite(this.recipe.id).subscribe({
+        next: () => {
+          this.isFavorite = false;
+          console.log('Recipe removed from favorites');
+        },
+        error: (err) => console.error('Failed to remove favorite', err),
+      });
     }
   }
+  
 
   checkIfFavorite() {
     this.isFavorite = false; 
