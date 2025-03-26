@@ -86,7 +86,7 @@ export class CartService {
     )
   }
 
-  setCart(cart: Cart){
+  setCart(cart: Cart ){
     return this.http.post<Cart>(this.baseUrl + 'cart', cart).subscribe({
       next: (cart) => this.cart.set(cart) 
     })

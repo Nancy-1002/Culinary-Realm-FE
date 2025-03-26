@@ -34,6 +34,7 @@ export class HeaderComponent {
   private router = inject(Router);
 
   logout(){
+    this.cartService.deleteCart();
     this.accountService.logout().subscribe({
       next: () => {
         this.accountService.currentUser.set(null);
